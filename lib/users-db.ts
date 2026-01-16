@@ -1,4 +1,5 @@
 import type { User } from "@/types"
+import { getTransactions as getTransactionsFromStorage } from "@/lib/data-storage"
 
 const USERS_KEY = "agriassist_users_db"
 const ADMIN_USER: User = {
@@ -15,21 +16,67 @@ const ADMIN_USER: User = {
   created_at: new Date().toISOString(),
 }
 
-// Initialize the database with admin user
+const DEMO_ACCOUNTS: User[] = [
+  {
+    id: "gov-001",
+    email: "officer@minagri.gov.rw",
+    password: "officer123",
+    full_name: "Jean Paul Ndayisenga",
+    phone_number: "+250788111111",
+    province: "Kigali City",
+    district: "Gasabo",
+    role: "government_officer",
+    ministry: "Ministry of Agriculture (MINAGRI)",
+    designation: "Agricultural Extension Officer",
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "buyer-001",
+    email: "buyer@rwandatraders.com",
+    password: "buyer123",
+    full_name: "Muhoza Trading Company",
+    phone_number: "+250789222222",
+    province: "Kigali City",
+    district: "Nyarugenge",
+    role: "buyer",
+    buyer_type: "company",
+    buyer_products: ["Maize", "Beans", "Rice", "Vegetables"],
+    created_at: new Date().toISOString(),
+  },
+  {
+    id: "investor-001",
+    email: "investor@agroventures.rw",
+    password: "investor123",
+    full_name: "AgriVentures Ltd",
+    phone_number: "+250788333333",
+    province: "Kigali City",
+    district: "Kicukiro",
+    role: "investor",
+    investment_amount: 50000000,
+    investment_focus: "Agricultural Technology & Farmer Support",
+    created_at: new Date().toISOString(),
+  },
+]
+
+// Initialize the database with admin user and demo accounts
 export function initializeDatabase() {
   if (typeof window === "undefined") return
 
   const existingData = localStorage.getItem(USERS_KEY)
   if (!existingData) {
-    localStorage.setItem(USERS_KEY, JSON.stringify([ADMIN_USER]))
+    localStorage.setItem(USERS_KEY, JSON.stringify([ADMIN_USER, ...DEMO_ACCOUNTS]))
   } else {
-    // Ensure admin user exists
     const users = JSON.parse(existingData) as User[]
     const adminExists = users.some((u) => u.email === ADMIN_USER.email)
     if (!adminExists) {
       users.unshift(ADMIN_USER)
-      localStorage.setItem(USERS_KEY, JSON.stringify(users))
     }
+    DEMO_ACCOUNTS.forEach((demoUser) => {
+      if (!users.some((u) => u.email === demoUser.email)) {
+        users.push(demoUser)
+      }
+    })
+    localStorage.setItem(USERS_KEY, JSON.stringify(users))
   }
 }
 
@@ -38,7 +85,7 @@ export function getAllUsers(): User[] {
   if (typeof window === "undefined") return []
 
   const data = localStorage.getItem(USERS_KEY)
-  return data ? JSON.parse(data) : [ADMIN_USER]
+  return data ? JSON.parse(data) : [ADMIN_USER, ...DEMO_ACCOUNTS]
 }
 
 // Get user by email and password
@@ -93,3 +140,5 @@ export function emailExists(email: string): boolean {
   const users = getAllUsers()
   return users.some((u) => u.email === email)
 }
+
+export const getTransactions = getTransactionsFromStorage

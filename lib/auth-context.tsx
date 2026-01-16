@@ -106,6 +106,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (userWithoutPassword.role === "admin") {
       document.documentElement.classList.add("admin-theme")
+    } else {
+      document.documentElement.classList.remove("admin-theme")
     }
   }
 

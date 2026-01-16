@@ -3,18 +3,21 @@
 import type React from "react"
 import { useState } from "react"
 import { useAuth } from "@/lib/auth-context"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Sprout, Mail, Lock, AlertCircle } from "lucide-react"
+import { getRedirectPath } from "@/lib/role-redirect"
 
 export function SignInForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
-  const { signIn } = useAuth()
+  const { signIn, user } = useAuth()
+  const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -23,6 +26,10 @@ export function SignInForm() {
 
     try {
       await signIn(email, password)
+      setTimeout(() => {
+        const redirectPath = getRedirectPath(user)
+        router.push(redirectPath)
+      }, 500)
     } catch (err) {
       setError("Invalid email or password. Please check your credentials or contact an administrator.")
     } finally {
@@ -104,12 +111,25 @@ export function SignInForm() {
               <span className="w-full border-t" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">Information</span>
+              <span className="bg-card px-2 text-muted-foreground">Demo Accounts</span>
             </div>
           </div>
-          <div className="text-center space-y-2">
-            <p className="text-sm text-muted-foreground">Don't have an account? Contact your administrator.</p>
-            <p className="text-xs text-muted-foreground">Serving farmers across all 30 districts of Rwanda</p>
+          <div className="text-center space-y-2 text-xs text-muted-foreground">
+            <p>
+              <strong>Admin:</strong> ihirweenzo@yahoo.com / enzo20090524
+            </p>
+            <p>
+              <strong>Farmer:</strong> jean@example.com / (any password)
+            </p>
+            <p>
+              <strong>Gov Officer:</strong> officer@minagri.gov.rw / officer123
+            </p>
+            <p>
+              <strong>Buyer:</strong> buyer@rwandatraders.com / buyer123
+            </p>
+            <p>
+              <strong>Investor:</strong> investor@agroventures.rw / investor123
+            </p>
           </div>
         </CardFooter>
       </Card>

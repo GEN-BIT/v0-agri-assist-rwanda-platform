@@ -13,9 +13,15 @@ export interface User {
   profile_picture?: string // Added profile picture URL field
   farm_size?: number
   farm_type?: string
-  role?: "admin" | "user"
+  role?: "admin" | "user" | "government_officer" | "buyer" | "investor" // Added new role types for government officers, buyers, and investors
   balance?: number // Added account balance field initialized to 0 RWF
   created_at: string
+  ministry?: string // Added government officer specific fields
+  designation?: string
+  buyer_type?: string // Added buyer specific fields
+  buyer_products?: string[]
+  investment_amount?: number // Added investor specific fields
+  investment_focus?: string
 }
 
 export interface AuthContextType {

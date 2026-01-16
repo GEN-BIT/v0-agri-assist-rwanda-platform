@@ -3,10 +3,24 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { LayoutDashboard, Leaf, Wallet, ShoppingCart, Settings, Shield } from "lucide-react"
+import {
+  LayoutDashboard,
+  Leaf,
+  Wallet,
+  ShoppingCart,
+  Settings,
+  Shield,
+  BarChart3,
+  Users,
+  TrendingUp,
+} from "lucide-react"
 import { useAuth } from "@/lib/auth-context"
 
-const navItems = [
+interface DashboardNavProps {
+  role?: string
+}
+
+const userNavItems = [
   {
     title: "Overview",
     href: "/dashboard",
@@ -34,17 +48,94 @@ const navItems = [
   },
 ]
 
-const adminNavItem = {
-  title: "Admin Panel",
-  href: "/dashboard/admin",
-  icon: Shield,
-}
+const adminNavItems = [
+  {
+    title: "Overview",
+    href: "/dashboard",
+    icon: LayoutDashboard,
+  },
+  {
+    title: "Admin Panel",
+    href: "/dashboard/admin",
+    icon: Shield,
+  },
+  {
+    title: "Settings",
+    href: "/dashboard/settings",
+    icon: Settings,
+  },
+]
 
-export function DashboardNav() {
+const governmentNavItems = [
+  {
+    title: "Analytics",
+    href: "/dashboard/government",
+    icon: BarChart3,
+  },
+  {
+    title: "Farmers",
+    href: "/dashboard/government",
+    icon: Users,
+  },
+  {
+    title: "Reports",
+    href: "/dashboard/government",
+    icon: TrendingUp,
+  },
+]
+
+const buyerNavItems = [
+  {
+    title: "Marketplace",
+    href: "/dashboard/buyer",
+    icon: ShoppingCart,
+  },
+  {
+    title: "Farmers",
+    href: "/dashboard/buyer",
+    icon: Users,
+  },
+  {
+    title: "My Orders",
+    href: "/dashboard/buyer",
+    icon: LayoutDashboard,
+  },
+]
+
+const investorNavItems = [
+  {
+    title: "Analytics",
+    href: "/dashboard/investor",
+    icon: TrendingUp,
+  },
+  {
+    title: "Performance",
+    href: "/dashboard/investor",
+    icon: BarChart3,
+  },
+  {
+    title: "Portfolio",
+    href: "/dashboard/investor",
+    icon: Wallet,
+  },
+]
+
+export function DashboardNav({ role }: DashboardNavProps) {
   const pathname = usePathname()
   const { user } = useAuth()
 
-  const displayNavItems = user?.role === "admin" ? [...navItems, adminNavItem] : navItems
+  const userRole = role || user?.role || "user"
+
+  let displayNavItems = userNavItems
+  if (userRole === "admin") {
+    displayNavItems = adminNavItems
+  } else if (userRole === "government_officer") {
+    displayNavItems = governmentNavItems
+  } else if (userRole === "buyer") {
+    displayNavItems = buyerNavItems
+  } else if (userRole === "investor") {
+    displayNavItems = investorNavItems
+  }
 
   return (
     <nav className="border-b border-border bg-card">
